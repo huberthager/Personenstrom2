@@ -25,12 +25,13 @@ public class Field {
 		this.sideLength = sideLength;
 		this.cellLength = 1;
 		this.initCells(rowSource, colSource, rowTarget, colTarget);
-		//this.initBarriers();
+		// this.initBarriers();
 
 		this.sourceCell = this.getSourceCell();
 		this.targetCell = this.getTargetCell();
 		this.pedestriansOnField = new LinkedList<>();
-		this.initPedestrians(); //zum testen setzt mehrere Personen vor Simbeginn
+		this.initPedestrians(); // zum testen setzt mehrere Personen vor
+								// Simbeginn
 		// // Pedestrianquelles zum test manuell Pedestrains setzen
 		// this.createPedestrian();// TODO Personen mÃ¼ssen verwaltet werden.
 		// this.pedestrianToMove = this.getSourceCell().getPedestrian();
@@ -44,8 +45,9 @@ public class Field {
 		return sideLength;
 	}
 
-	public double getTimeToMovePedestrian() {
-		return cellLength / this.pedestrianToMove.getFreeFlowVelocity();
+	public double getTimeToMovePedestrian(Cell that, Cell other) {
+		return euklidDist(that, other)
+				/ this.pedestrianToMove.getFreeFlowVelocity();
 	}
 
 	public Cell getSourceCell() {
@@ -109,19 +111,34 @@ public class Field {
 
 	public void initPedestrians() {
 		Pedestrian p;
-		//Geschwindigkeittest: Horizontal
-		p=new Pedestrian(this.getCell(5,0),2);
-		this.getCell(5, 0).setPedestrian(p);
+		// Geschwindigkeittest: Horizontal
+		// p=new Pedestrian(this.getCell(5,0),2);
+		// this.getCell(5, 0).setPedestrian(p);
+		// this.pedestriansOnField.add(p);
+
+		// Geschwindigkeittest: Diagonal
+//		p = new Pedestrian(this.getCell(0, 0), 2);
+//		this.getCell(0, 0).setPedestrian(p);
+//		this.pedestriansOnField.add(p);
+		
+
+		// Hühnertest!!
+		// for (int row = 2; row < 8; row++) {
+		// p = new Pedestrian(this.getCell(row, 0), row+1);
+		// this.getCell(row, 0).setPedestrian(p);
+		// this.pedestriansOnField.add(p);
+		// }
+		
+		//Personenpotenzialtest
+		Pedestrian p1;
+		p = new Pedestrian(this.getCell(0, 0), 2);
+		this.getCell(0, 0).setPedestrian(p);
 		this.pedestriansOnField.add(p);
 		
-		
-		
-		//Hühnertest!!
-//		for (int row = 2; row < 8; row++) {
-//			p = new Pedestrian(this.getCell(row, 0), row+1);
-//			this.getCell(row, 0).setPedestrian(p);
-//			this.pedestriansOnField.add(p);
-//		}
+		p1 = new Pedestrian(this.getCell(1, 0), 4);
+		this.getCell(1, 0).setPedestrian(p1);
+		this.pedestriansOnField.add(p1);
+
 	}
 
 	public void killPedestrianOnTarget(Pedestrian pedestrian) {
@@ -136,19 +153,57 @@ public class Field {
 		double tmp;
 		Set<Cell> neighbours = this
 				.getNeighboursOfPedestrian(this.pedestrianToMove);
+
 		for (Cell c : neighbours) {
 			// !!!Spezialfall Für freie sicht zwischen Person und Ziel
 			tmp = this.euklidDist(c, targetCell) * (-1);
+			tmp += friedrichsMollifier(c);
 			if (utilityValue == 1 || tmp > utilityValue) {
 				utilityValue = tmp;
 				this.targetCellForNextStep = c;
 			}
 		}
+
 		// System.out.println(targetCellForNextStep.getRow() + " " +
 		// targetCellForNextStep.getCol());
 		// this.timeToMovePedestrian = utilityValue * (-1)
 		// / pedestrianToMove.getFreeFlowVelocity();
 		return targetCellForNextStep;
+	}
+
+	private double friedrichsMollifier(Cell cell) {
+		int h = 2;
+		int w = 2;
+		double dist=0;
+		double result = 0;
+		Set<Cell> cellsInRadius = new HashSet<>();
+		Set<Cell> tmp = new HashSet<>();
+		Set<Pedestrian> pedestriansInRadius = new HashSet<>();
+		cellsInRadius.addAll(this.getNeighboursOfPedestrian(new Pedestrian(
+				cell, 0)));
+		for (Cell c : cellsInRadius) {
+			tmp.addAll(this.getNeighboursOfPedestrian(new Pedestrian(c, 0)));
+		}
+		cellsInRadius.addAll(tmp);
+
+		for (Cell c : cellsInRadius) {
+			if (c.getPedestrian() != null) {
+				pedestriansInRadius.add(c.getPedestrian());
+			}
+
+		}
+		
+		if(pedestriansInRadius.isEmpty()){
+			return result;
+		}else{
+			for(Pedestrian p : pedestriansInRadius){
+				dist=euklidDist(cell,p.getLocation());
+				result+= -h*this.cellLength* Math.exp(1/(Math.pow((dist/w*this.cellLength), 2)));
+			}
+		}
+		System.out.println(result);
+		return result;
+
 	}
 
 	public boolean movePedestrian() {
@@ -175,7 +230,7 @@ public class Field {
 			return false;
 		}
 	}
-
+//obacht hubert schon wieder scheisse gebaut...puuuh  
 	public Set<Cell> getNeighboursOfPedestrian(Pedestrian p) {
 		int row = this.getPedestrianToMove().getLocation().getRow();
 		int col = this.getPedestrianToMove().getLocation().getCol();
@@ -290,28 +345,26 @@ public class Field {
 
 	private void initBarriers() {
 		// Testfall1 Barrier durchgehend in mitte
-//		for (int i = 0; i < 10; i++) {
-//			this.getCell(i, 5).setBarrier(new Barrier());
-//		}
-		//Huenertest
-		
+		// for (int i = 0; i < 10; i++) {
+		// this.getCell(i, 5).setBarrier(new Barrier());
+		// }
+		// Huenertest
+
 		this.getCell(2, 5).setBarrier(new Barrier());
 		this.getCell(2, 6).setBarrier(new Barrier());
 		this.getCell(2, 7).setBarrier(new Barrier());
-		
+
 		this.getCell(2, 7).setBarrier(new Barrier());
 		this.getCell(3, 7).setBarrier(new Barrier());
 		this.getCell(4, 7).setBarrier(new Barrier());
 		this.getCell(5, 7).setBarrier(new Barrier());
 		this.getCell(6, 7).setBarrier(new Barrier());
 		this.getCell(7, 7).setBarrier(new Barrier());
-		
-		
+
 		this.getCell(7, 5).setBarrier(new Barrier());
 		this.getCell(7, 6).setBarrier(new Barrier());
 		this.getCell(7, 7).setBarrier(new Barrier());
-		
-		
+
 	}
 
 	private double euklidDist(Cell that, Cell other) {

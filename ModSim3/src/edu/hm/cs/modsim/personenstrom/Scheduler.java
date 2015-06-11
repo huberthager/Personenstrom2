@@ -45,9 +45,11 @@ public class Scheduler {
 	public void run() {
 		while (clock < this.endSimTime && !(this.futureEventList.isEmpty())) {
 			this.currentEvent = futureEventList.removeAndGetFirst();
+			
+			this.clock = currentEvent.getEventTime();
 			this.currentEvent.processEvent(field, futureEventList);
-			this.clock += currentEvent.getEventTime();
-			if(currentEvent instanceof StartMove){
+			
+			if(currentEvent instanceof StopMove){
 			System.out.println(clock);
 			}
 		}
