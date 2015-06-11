@@ -1,5 +1,7 @@
 package edu.hm.cs.modsim.personenstrom;
 
+import java.util.List;
+
 public class Scheduler {
 
 	private double clock;
@@ -7,6 +9,8 @@ public class Scheduler {
 	private int sideLength;
 	private Field field;
 	private FutureEventList futureEventList;
+	private Event currentEvent;
+	private List<Pedestrian> pedestriansOnField;
 
 	public Scheduler(double endSimTime, int sideLength, int rowSource,
 			int colSource, int rowTarget, int colTarget) {
@@ -16,6 +20,8 @@ public class Scheduler {
 		this.field = new Field(sideLength, rowSource, colSource, rowTarget,
 				colTarget);
 		this.futureEventList = new FutureEventList();
+		this.currentEvent = null;
+		pedestriansOnField = field.getPedestriansOnField();
 		// Fußgänger betreten Feld während der Sim
 
 		// while (clock < this.endSimTime) {
@@ -30,16 +36,22 @@ public class Scheduler {
 		// this.clock = 0;
 
 		// Fußgänger sind vor der Sim auf dem Feld
-		futureEventList.addEvent(new Arrival(0));
-		futureEventList.addEvent(new Arrival(0));
+		for(Pedestrian p : pedestriansOnField) {
+			futureEventList.addEvent(new Arrival(0,p));
+		}
 
 	}
-	
+
 	public void run() {
-		while(clock < this.endSimTime && !(this.futureEventList.isEmpty())) {
-			futureEventList.removeAndGetFirst().processEvent(field,
-					futureEventList);
+		while (clock < this.endSimTime && !(this.futureEventList.isEmpty())) {
+			this.currentEvent = futureEventList.removeAndGetFirst();
+			this.currentEvent.processEvent(field, futureEventList);
+			this.clock += currentEvent.getEventTime();
+			if(currentEvent instanceof StartMove){
+			System.out.println(clock);
+			}
 		}
+		System.out.println(clock);
 	}
 
 	public void printFieldToConsole() {

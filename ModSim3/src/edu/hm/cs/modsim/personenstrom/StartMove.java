@@ -2,11 +2,8 @@ package edu.hm.cs.modsim.personenstrom;
 
 public class StartMove extends Event {
 
-	private Pedestrian pedestrian;
-
 	public StartMove(double clock, Pedestrian pedestrian) {
-		super(clock);
-		this.pedestrian = pedestrian;
+		super(clock ,pedestrian);
 	}
 
 	@Override
@@ -27,10 +24,6 @@ public class StartMove extends Event {
 		//Zeichne Feld nach jedem Schritt
 		field.printToConsole(field.getSideLength());
 		System.out.println();
-	}
-
-	public Pedestrian getPedestrian() {
-		return this.pedestrian;
 	}
 
 }

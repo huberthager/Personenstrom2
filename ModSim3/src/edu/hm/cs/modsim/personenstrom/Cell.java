@@ -73,11 +73,9 @@ public class Cell {
 
 	public void printToConsole(int sideLength) {
 		if (this.barrier != null) {
-			System.out.print("[B]");
+			System.out.print("[+]");
 		} else if (this.pedestrian != null) {
 			System.out.print("[P]");
-		} else if (this.source != null) {
-			System.out.print("[S]");
 		} else if (this.target != null) {
 			System.out.print("[T]");
 		} else {

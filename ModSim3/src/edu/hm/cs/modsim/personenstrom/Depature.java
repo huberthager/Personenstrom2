@@ -5,12 +5,8 @@ public class Depature extends Event {
 	private Pedestrian pedestrian;
 	
 	public Depature(double eventTime, Pedestrian pedestrian) {
-		super(eventTime);
-		this.pedestrian = pedestrian;
-	}
+		super(eventTime, pedestrian);
 	
-	public Pedestrian getPedestrian() {
-		return this.pedestrian;
 	}
 	
 	@Override
