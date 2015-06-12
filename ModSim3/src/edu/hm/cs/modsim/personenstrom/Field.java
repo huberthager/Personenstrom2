@@ -1,9 +1,12 @@
 package edu.hm.cs.modsim.personenstrom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Field {
@@ -111,33 +114,33 @@ public class Field {
 
 	public void initPedestrians() {
 		Pedestrian p;
+
 		// Geschwindigkeittest: Horizontal
-		// p=new Pedestrian(this.getCell(5,0),2);
-		// this.getCell(5, 0).setPedestrian(p);
-		// this.pedestriansOnField.add(p);
+		p = new Pedestrian(this.getCell(0, 0), 2);
+		this.getCell(0, 0).setPedestrian(p);
+		this.pedestriansOnField.add(p);
 
 		// Geschwindigkeittest: Diagonal
-//		p = new Pedestrian(this.getCell(0, 0), 2);
-//		this.getCell(0, 0).setPedestrian(p);
-//		this.pedestriansOnField.add(p);
-		
+		// p = new Pedestrian(this.getCell(0, 0), 2);
+		// this.getCell(0, 0).setPedestrian(p);
+		// this.pedestriansOnField.add(p);
 
-		// H�hnertest!!
+		// H�hnertest!!
 		// for (int row = 2; row < 8; row++) {
 		// p = new Pedestrian(this.getCell(row, 0), row+1);
 		// this.getCell(row, 0).setPedestrian(p);
 		// this.pedestriansOnField.add(p);
 		// }
-		
-		//Personenpotenzialtest
-		Pedestrian p1;
-		p = new Pedestrian(this.getCell(0, 0), 2);
-		this.getCell(0, 0).setPedestrian(p);
-		this.pedestriansOnField.add(p);
-		
-		p1 = new Pedestrian(this.getCell(1, 0), 4);
-		this.getCell(1, 0).setPedestrian(p1);
-		this.pedestriansOnField.add(p1);
+
+		// Personenpotenzialtest
+		// Pedestrian p1;
+		// p = new Pedestrian(this.getCell(0, 0), 2);
+		// this.getCell(0, 0).setPedestrian(p);
+		// this.pedestriansOnField.add(p);
+		//
+		// p1 = new Pedestrian(this.getCell(1, 0), 4);
+		// this.getCell(1, 0).setPedestrian(p1);
+		// this.pedestriansOnField.add(p1);
 
 	}
 
@@ -153,9 +156,10 @@ public class Field {
 		double tmp;
 		Set<Cell> neighbours = this
 				.getNeighboursOfPedestrian(this.pedestrianToMove);
-
+		// Dijkstra mit pedestrianToMove aufrufen plus neighbours
+		this.targetCellByDijkstra(this.pedestrianToMove, neighbours);
 		for (Cell c : neighbours) {
-			// !!!Spezialfall F�r freie sicht zwischen Person und Ziel
+			// !!!Spezialfall F�r freie sicht zwischen Person und Ziel
 			tmp = this.euklidDist(c, targetCell) * (-1);
 			tmp += friedrichsMollifier(c);
 			if (utilityValue == 1 || tmp > utilityValue) {
@@ -171,10 +175,74 @@ public class Field {
 		return targetCellForNextStep;
 	}
 
-	private double friedrichsMollifier(Cell cell) {
+	private Cell targetCellByDijkstra(Pedestrian pToMove,
+			Set<Cell> neighboursOfP) {
+
+		Cell pedLoc = pToMove.getLocation();
+		Map<Cell, Double> cellsToMove = new HashMap<>();
+		Map<Cell, Double> reachableCells = new HashMap<>();
+//		System.out.println("neighbourSize: " + neighboursOfP.size());
+
+		for (Cell c : neighboursOfP) {
+			double dist = this.euklidDist(pedLoc, c);
+			reachableCells.put(c, dist); // Alle erreichbaren Zellen mit
+											// ihren Distanzen als Paare in Map
+		}
+		// cellLocationDistPairs.put(pedLoc, 0.0); // Startknoten mit Distanz 0
+
+		Cell shortest = null;
+		double distOfShortest = (double) sideLength; // zu groß damit in if
+														// statement
+		// gesprungen wird
+		while (!reachableCells.isEmpty()) {
+			/*
+			 * Start nächstgelegene Zelle finden
+			 */
+			for (Map.Entry<Cell, Double> entry : reachableCells.entrySet()) {
+//				System.out
+//						.println(entry.getKey().getRow() + " "
+//								+ entry.getKey().getCol() + " dist "
+//								+ entry.getValue());
+				if (entry.getValue() < distOfShortest) {
+					shortest = entry.getKey();
+					distOfShortest = entry.getValue();
+				}
+
+			}
+			/*
+			 * Ende nächstgelegene Zelle gefunden
+			 */
+
+			/*
+			 * shortest aus cellLocationDistPairs löschen und diese um
+			 * shortest-Nachbarn die noch nicht in cellLocationDistPairs sind
+			 * erweitern + Distanzen aktualisieren
+			 */
+			Set<Cell> neighboursOfShortest = this.neighboursOfCell(
+					shortest.getRow(), shortest.getCol());
+			// ausgabe der neighbours of shortest
+			double distOfShortestToNeighbours;
+			reachableCells.remove(shortest);
+			cellsToMove.put(shortest, distOfShortest); 
+			
+			for (Cell c : neighboursOfShortest) {
+				distOfShortestToNeighbours = euklidDist(shortest, c);
+
+				reachableCells.put(c, distOfShortest
+						+ distOfShortestToNeighbours);
+			}
+
+		}
+
+		return targetCellForNextStep;
+	}
+
+	private double friedrichsMollifier(Cell cell) {// mit row und col
+													// getNeighboursofCell
+													// aufrufen!!!
 		int h = 2;
 		int w = 2;
-		double dist=0;
+		double dist = 0;
 		double result = 0;
 		Set<Cell> cellsInRadius = new HashSet<>();
 		Set<Cell> tmp = new HashSet<>();
@@ -192,13 +260,16 @@ public class Field {
 			}
 
 		}
-		
-		if(pedestriansInRadius.isEmpty()){
+
+		if (pedestriansInRadius.isEmpty()) {
 			return result;
-		}else{
-			for(Pedestrian p : pedestriansInRadius){
-				dist=euklidDist(cell,p.getLocation());
-				result+= -h*this.cellLength* Math.exp(1/(Math.pow((dist/w*this.cellLength), 2)));
+		} else {
+			for (Pedestrian p : pedestriansInRadius) {
+				dist = euklidDist(cell, p.getLocation());
+				result += -h
+						* this.cellLength
+						* Math.exp(1 / (Math.pow((dist / w * this.cellLength),
+								2)));
 			}
 		}
 		System.out.println(result);
@@ -230,12 +301,18 @@ public class Field {
 			return false;
 		}
 	}
-//obacht hubert schon wieder scheisse gebaut...puuuh  
-	public Set<Cell> getNeighboursOfPedestrian(Pedestrian p) {
-		int row = this.getPedestrianToMove().getLocation().getRow();
-		int col = this.getPedestrianToMove().getLocation().getCol();
-		int length = this.sideLength - 1;
 
+	// obacht hubert schon wieder scheisse gebaut...puuuh und jetz verbessert
+	// 8-)
+	public Set<Cell> getNeighboursOfPedestrian(Pedestrian p) {
+		int row = p.getLocation().getRow();
+		int col = p.getLocation().getCol();
+		return neighboursOfCell(row, col);
+
+	}
+
+	private Set<Cell> neighboursOfCell(int row, int col) {
+		int length = this.sideLength - 1;
 		Set<Cell> neighbours = new HashSet<>();
 		// Ecken
 		if (row == 0 && col == 0) {
