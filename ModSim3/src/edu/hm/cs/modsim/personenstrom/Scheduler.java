@@ -22,7 +22,7 @@ public class Scheduler {
 		this.futureEventList = new FutureEventList();
 		this.currentEvent = null;
 		pedestriansOnField = field.getPedestriansOnField();
-		// Fußgänger betreten Feld während der Sim
+		// Fu�g�nger betreten Feld während der Sim
 
 		// while (clock < this.endSimTime) {
 		// Arrival arrival = new Arrival(clock);
@@ -39,7 +39,6 @@ public class Scheduler {
 		for(Pedestrian p : pedestriansOnField) {
 			futureEventList.addEvent(new Arrival(0,p));
 		}
-
 	}
 
 	public void run() {

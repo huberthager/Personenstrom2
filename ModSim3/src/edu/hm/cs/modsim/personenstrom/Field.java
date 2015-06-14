@@ -382,7 +382,9 @@ public class Field {
 	public boolean sourceIsOccupied() {
 		return (this.getSourceCell().getPedestrian() != null) ? true : false;
 	}
-
+	
+	
+	
 	// private boolean isOnEastBorder() {
 	// return false;
 	// }
