@@ -17,11 +17,14 @@ public class StartMove extends Event {
 				target);
 		field.movePedestrian(); 
 	
-		
+		//TODO
+		if(timeToMove==0){
+			timeToMove=1;
+			System.out.println("skdjfksdhflsdhf");
+		}
 		
 		futureEventList.addEvent(new StopMove(this.getEventTime() + timeToMove,
-				pToMove)); // Einordnen in FEL
-		// Zeichne Feld nach jedem Schritt
+				pToMove)); 
 		field.printToConsole(field.getSideLength());
 		System.out.println();
 	}
