@@ -30,6 +30,5 @@ public class Pedestrian {
 
 	private  double  freeFlowVelocity() {
 		return new Random().nextGaussian()*0.18 + 1.3;
-//		return 1.3;
 	}
 }

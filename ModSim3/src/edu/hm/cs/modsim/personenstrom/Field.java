@@ -24,7 +24,7 @@ public class Field {
 	private List<Cell> field = new ArrayList<>();
 	private List<Pedestrian> pedestriansOnField;
 
-	public Field(int sideLength, int rowSource, int colSource, List<Cell> targets) {
+	public Field(int sideLength, int rowSource, int colSource, List<Cell> targets,int szenario) {
 		this.sideLength = sideLength;
 		this.cellLength = 1;
 		this.initCells(rowSource, colSource, targets);
@@ -33,7 +33,7 @@ public class Field {
 		this.sourceCell = this.getSourceCell();
 		this.targets=targets;
 		this.pedestriansOnField = new LinkedList<>();
-		this.initPedestrians(); 
+		this.initPedestrians(szenario); 
 	}
 
 	public int getSideLength() {
@@ -109,52 +109,69 @@ public class Field {
 		return null;
 	}
 
-	public void initPedestrians() {
+	public void initPedestrians(int szenario) {
 		Pedestrian p;
-
+		
+		if(szenario==1){
 		// Geschwindigkeittest: Horizontal
-//		p = new Pedestrian(this.getCell(0, 0), 2);
-//		this.getCell(0, 0).setPedestrian(p);
-//		this.pedestriansOnField.add(p);
+		p = new Pedestrian(this.getCell(0, 0));
+		this.getCell(0, 0).setPedestrian(p);
+		this.pedestriansOnField.add(p);
 
 		// Geschwindigkeittest: Diagonal
-		// p = new Pedestrian(this.getCell(0, 0), 2);
+		// p = new Pedestrian(this.getCell(0, 0));
 		// this.getCell(0, 0).setPedestrian(p);
 		// this.pedestriansOnField.add(p);
 		
 		
 		// Personenpotenzialtest
 				// Pedestrian p1;
-				// p = new Pedestrian(this.getCell(0, 0), 2);
+				// p = new Pedestrian(this.getCell(0, 0));
 				// this.getCell(0, 0).setPedestrian(p);
 				// this.pedestriansOnField.add(p);
 				//
-				// p1 = new Pedestrian(this.getCell(1, 0), 4);
+				// p1 = new Pedestrian(this.getCell(1, 0));
 				// this.getCell(1, 0).setPedestrian(p1);
 				// this.pedestriansOnField.add(p1);
 
-
+		}else if(szenario==2){
 		// H�hnertest!!
 		 for (int row = 2; row < 8; row++) {
+			 p = new Pedestrian(this.getCell(row, 0));
+			 this.getCell(row, 0).setPedestrian(p);
+			 this.pedestriansOnField.add(p);
+		 }
+ 		 this.initBarriers(szenario);
+			
+		}else if(szenario==3){
+		//Fundamentaldiagramm
+		 for (int row = 0; row < 12; row++) {
 		 p = new Pedestrian(this.getCell(row, 0));
 		 this.getCell(row, 0).setPedestrian(p);
 		 this.pedestriansOnField.add(p);
 		 }
- 		this.initBarriers();
+		 this.initBarriers(szenario);
+		}else if(szenario==4){
 		
-		//Fundamentaldiagramm
+		//Evakuirungsszenario 1
 		
-		//Evakuirungszenario
+		for(int row = 3;row<7;row++){
+			for(int col=3;col<7;col++){
+				p = new Pedestrian(this.getCell(row, col));
+				this.getCell(row, col).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+			}
+			//Evakuirungsszenario 2
+			
+//			for(int row = 2;row<8;row++){
+//				for(int col=2;col<8;col++){
+//					p = new Pedestrian(this.getCell(row, col));
+//					this.getCell(row, col).setPedestrian(p);
+//					this.pedestriansOnField.add(p);
+//				}
+		}
 		
-//		for(int row = 3;row<7;row++){
-//			for(int col=3;col<7;col++){
-//				p = new Pedestrian(this.getCell(row, col));
-//				this.getCell(row, col).setPedestrian(p);
-//				this.pedestriansOnField.add(p);
-//			}
-//		}
-		
-		
+		}
 		
 		
 	}
@@ -397,13 +414,9 @@ public class Field {
 			}
 	}
 
-	private void initBarriers() {
-		// Testfall1 Barrier durchgehend in mitte
-		// for (int i = 0; i < 10; i++) {
-		// this.getCell(i, 5).setBarrier(new Barrier());
-		// }
+	private void initBarriers(int szenario) {
+		if(szenario==2){
 		// Huenertest
-
 		this.getCell(2, 5).setBarrier(new Barrier());
 		this.getCell(2, 6).setBarrier(new Barrier());
 		this.getCell(2, 7).setBarrier(new Barrier());
@@ -418,7 +431,12 @@ public class Field {
 		this.getCell(7, 5).setBarrier(new Barrier());
 		this.getCell(7, 6).setBarrier(new Barrier());
 		this.getCell(7, 7).setBarrier(new Barrier());
-
+		}else if(szenario==3){
+		//Fundamentaldiagramm
+		for(int i=0;i<65;i++){
+			this.getCell(12, i).setBarrier(new Barrier());
+			}
+		}
 	}
 
 	private double euklidDist(Cell that, Cell other) {

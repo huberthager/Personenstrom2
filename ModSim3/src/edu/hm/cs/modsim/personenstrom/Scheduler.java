@@ -13,11 +13,11 @@ public class Scheduler {
 	private List<Pedestrian> pedestriansOnField;
 
 	public Scheduler(double endSimTime, int sideLength, int rowSource,
-			int colSource, List<Cell> targets) {
+			int colSource, List<Cell> targets,int szenario) {
 		this.clock = 0;
 		this.endSimTime = endSimTime;
 		this.sideLength = sideLength;
-		this.field = new Field(sideLength, rowSource, colSource,targets);
+		this.field = new Field(sideLength, rowSource, colSource,targets,szenario);
 		this.futureEventList = new FutureEventList();
 		this.currentEvent = null;
 		pedestriansOnField = field.getPedestriansOnField();
