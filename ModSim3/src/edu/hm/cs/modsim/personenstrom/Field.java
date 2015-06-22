@@ -113,10 +113,10 @@ public class Field {
 		Pedestrian p;
 		
 		if(szenario==1){
-		// Geschwindigkeittest: Horizontal
-		p = new Pedestrian(this.getCell(0, 0));
-		this.getCell(0, 0).setPedestrian(p);
-		this.pedestriansOnField.add(p);
+//		// Geschwindigkeittest: Horizontal
+//		p = new Pedestrian(this.getCell(0, 0));
+//		this.getCell(0, 0).setPedestrian(p);
+//		this.pedestriansOnField.add(p);
 
 		// Geschwindigkeittest: Diagonal
 		// p = new Pedestrian(this.getCell(0, 0));
@@ -125,14 +125,18 @@ public class Field {
 		
 		
 		// Personenpotenzialtest
-				// Pedestrian p1;
-				// p = new Pedestrian(this.getCell(0, 0));
-				// this.getCell(0, 0).setPedestrian(p);
-				// this.pedestriansOnField.add(p);
-				//
-				// p1 = new Pedestrian(this.getCell(1, 0));
-				// this.getCell(1, 0).setPedestrian(p1);
-				// this.pedestriansOnField.add(p1);
+				 Pedestrian p1;
+				 p = new Pedestrian(this.getCell(0, 0));
+				 this.getCell(0, 0).setPedestrian(p);
+				 this.pedestriansOnField.add(p);
+				
+				 p1 = new Pedestrian(this.getCell(1, 0));
+				 this.getCell(1, 0).setPedestrian(p1);
+				 this.pedestriansOnField.add(p1);
+				 
+				 p1 = new Pedestrian(this.getCell(2, 0));
+				 this.getCell(2, 0).setPedestrian(p1);
+				 this.pedestriansOnField.add(p1);
 
 		}else if(szenario==2){
 		// H�hnertest!!
@@ -196,7 +200,7 @@ public class Field {
 		
 		//Freie Sicht auf Ziel
 		Set<Cell> neighbours = this
-				.getNeighboursOfPedestrian(this.pedestrianToMove);
+				.getNeighboursOfPedestrian(this.pedestrianToMove,0);
 		//Welches Target ist das beste fuer mich?
 		for(Cell d:targets){
 			tmp=this.euklidDist(pedestrianToMove.getLocation(),d);
@@ -209,10 +213,7 @@ public class Field {
 		}
 		for (Cell c : neighbours) {
 			tmp = this.euklidDist(c,myTarget ) * (-1);
-				
-			
-			
-			//tmp += friedrichsMollifier(c);
+			tmp += friedrichsMollifier(c);
 			if (utilityValue == 1 || tmp > utilityValue) {
 				utilityValue = tmp;
 				this.targetCellForNextStep = c;
@@ -250,14 +251,14 @@ public class Field {
 		Set<Cell> tmp = new HashSet<>();
 		Set<Pedestrian> pedestriansInRadius = new HashSet<>();
 		cellsInRadius.addAll(this.getNeighboursOfPedestrian(new Pedestrian(
-				cell)));
+				cell),1));
 		for (Cell c : cellsInRadius) {
-			tmp.addAll(this.getNeighboursOfPedestrian(new Pedestrian(c)));
+			tmp.addAll(this.getNeighboursOfPedestrian(new Pedestrian(c),1));
 		}
 		cellsInRadius.addAll(tmp);
 
 		for (Cell c : cellsInRadius) {
-			if (c.getPedestrian() != null) {
+			if (c.getPedestrian() != null && !c.getPedestrian().equals(pedestrianToMove)) {
 				pedestriansInRadius.add(c.getPedestrian());
 			}
 
@@ -268,13 +269,17 @@ public class Field {
 		} else {
 			for (Pedestrian p : pedestriansInRadius) {
 				dist = euklidDist(cell, p.getLocation());
-				result += -h
+				if(Math.abs(dist)<w){
+				result+= -h
 						* this.cellLength
 						* Math.exp(1 / (Math.pow((dist / w * this.cellLength),
-								2)));
+								2)-1));
+				}else{
+					result+=0;
+				}
 			}
 		}
-		System.out.println(result);
+//		System.out.println("Mollifier :" +result);
 		return result;
 
 	}
@@ -298,14 +303,14 @@ public class Field {
 	}
 
 	
-	public Set<Cell> getNeighboursOfPedestrian(Pedestrian p) {
+	public Set<Cell> getNeighboursOfPedestrian(Pedestrian p,int mollifier) {
 		int row = p.getLocation().getRow();
 		int col = p.getLocation().getCol();
-		return neighboursOfCell(row, col);
+		return neighboursOfCell(row, col, mollifier);
 
 	}
 
-	private Set<Cell> neighboursOfCell(int row, int col) {
+	private Set<Cell> neighboursOfCell(int row, int col, int mollifier) {
 		int length = this.sideLength - 1;
 		Set<Cell> neighbours = new HashSet<>();
 		// Ecken
@@ -365,6 +370,7 @@ public class Field {
 			neighbours.add(this.getCell(row - 1, col));
 			neighbours.add(this.getCell(row - 1, col + 1));
 		}
+
 		Set<Cell> delete = new HashSet<>();
 		for (Cell c : neighbours) {
 			if (c.getPedestrian() != null || c.getBarrier() != null) {
@@ -372,7 +378,9 @@ public class Field {
 			}
 
 		}
+		if(mollifier==0){
 		neighbours.removeAll(delete);
+		}
 		return neighbours;
 	}
 

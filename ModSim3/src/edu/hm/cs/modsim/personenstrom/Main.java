@@ -15,14 +15,14 @@ public class Main {
 	
 	
 	public static void main(String[] args) {
-		//Simulation
+		
 		for(int i=0;i<1;i++){
 			//Fundamentaldiagramm: sideLength=65
 		int sideLength = 10;
 		double duration = 1000;
 		
 		//Test: Freier Fluss  1
-		List<Cell> targets=simpleMovement();
+//		List<Cell> targets=simpleMovement();
 		
 		//Test: Huehnertest 2
 //		List<Cell> targets = chickenTest();
@@ -31,10 +31,10 @@ public class Main {
 //		List<Cell>targets=fundamentalDiag();
 		
 		//Test: Evakuriungsszenario 4
-//		List<Cell> targets=twoDoorSzenario();
+		List<Cell> targets=twoDoorSzenario();
 //		List<Cell> targets=fourDoorSzenario();
 		
-		Scheduler scheduler = new Scheduler(duration,sideLength,0,0,targets,1);
+		Scheduler scheduler = new Scheduler(duration,sideLength,0,0,targets,4);
 		double tmp=scheduler.run();
 		simTimes.add(tmp);
 		}
