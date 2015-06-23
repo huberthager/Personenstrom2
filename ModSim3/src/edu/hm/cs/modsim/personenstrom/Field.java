@@ -516,21 +516,18 @@ public class Field {
 	}
 
 	// Falsch
-	private int nearestTarget(Map<Integer, Double> deleted) {
-		int index;
-		int nearestTarget = field.indexOf(targets.get(0));
-		double tmp = 1000;
-		if (targets.size() > 1) {
-			for (Cell c : targets) {
-				index = targets.indexOf(c);
-				double dist = deleted.get(index);
-				if (tmp > dist) {
-					tmp = dist;
-					nearestTarget = index;
-				}
+	private int nearestTarget(int location) {
+		int target = location;
+		double dist = Double.MAX_VALUE;
+		double tmp;
+		for(Cell c : targets) {
+			tmp = euklidDist(field.get(location), c);
+			if(tmp < dist) {
+				dist = tmp;
+				target = c.getRow() * sideLength + c.getCol();
 			}
 		}
-		return nearestTarget;
+		return target;
 	}
 
 	private Map<Integer, Double> neighboursFromCell(
@@ -575,7 +572,8 @@ public class Field {
 			reachables = updateDist(reachables, deleted, shortest,
 					distToShortest);
 		}
-		int target = 59;
+		int target = nearestTarget(start);
+//		int target = 59;
 		if (deleted.size() > 1 && deleted.containsKey(target)) {
 			// int target = field.indexOf(targets.get(0));
 			// int target = nearestTarget(deleted);
