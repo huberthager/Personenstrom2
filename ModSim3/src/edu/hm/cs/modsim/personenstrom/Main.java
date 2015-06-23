@@ -14,23 +14,23 @@ public class Main {
 	public static void main(String[] args) throws InterruptedException {
 		for(int i=0;i<1;i++){
 			//Fundamentaldiagramm: sideLength=65
-		int sideLength = 10;
+		int sideLength = 65;
 		double duration = 100;
 		
 		//Test: Freier Fluss  1
 //		List<Cell> targets=simpleMovement();
 		
 		//Test: Huehnertest 2
-		List<Cell> targets = chickenTest();
+//		List<Cell> targets = chickenTest();
 		
 		//Test: Fundamentaldiagramm 3
-//		List<Cell>targets=fundamentalDiag();
+		List<Cell>targets=fundamentalDiag();
 		
 		//Test: Evakuriungsszenario 4
 //		List<Cell> targets=twoDoorSzenario();
 //		List<Cell> targets=fourDoorSzenario();
 		
-		Scheduler scheduler = new Scheduler(duration,sideLength,0,0,targets,2);
+		Scheduler scheduler = new Scheduler(duration,sideLength,targets,3);
 		double tmp=scheduler.run();
 		simTimes.add(tmp);
 		}

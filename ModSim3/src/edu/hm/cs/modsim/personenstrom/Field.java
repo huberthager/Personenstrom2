@@ -19,12 +19,13 @@ public class Field {
 	private int sideLength;
 	private int scenario;
 	private double cellLength;
+	private boolean pedestrianWithoutEvent;
 
-//	private Cell sourceCell;
 	private List<Cell> targets;
 	private Cell targetCellForNextStep;
 
 	private Pedestrian pedestrianToMove;
+	private Pedestrian pedestrianReturn;
 
 	private List<Cell> field = new ArrayList<>();
 	private List<Pedestrian> pedestriansOnField;
@@ -34,14 +35,21 @@ public class Field {
 		this.sideLength = sideLength;
 		this.cellLength = 1;
 		this.scenario = scenario;
+		this.pedestrianWithoutEvent=false;
 		this.initCells(targets);
-
-//		this.sourceCell = this.getSourceCell();
+		this.pedestrianReturn=null;
 		this.targets = targets;
 		this.pedestriansOnField = new LinkedList<>();
 		this.initPedestrians(scenario);
 		this.printToConsole(sideLength);
 	}
+
+	public Pedestrian getPedestrianReturn() {
+		Pedestrian p=pedestrianReturn;
+		pedestrianReturn=null;
+		return p;
+	}
+
 
 	public int getSideLength() {
 		return sideLength;
@@ -52,9 +60,6 @@ public class Field {
 				/ this.pedestrianToMove.getFreeFlowVelocity();
 	}
 
-//	public Cell getSourceCell() {
-//		return sourceCell;
-//	}
 
 	public List<Cell> getTargets() {
 		return targets;
@@ -81,16 +86,6 @@ public class Field {
 	public List<Pedestrian> getPedestriansOnField() {
 		return pedestriansOnField;
 	}
-
-	// // Wo Fußgänger hinsetzen falls Source besetzt?
-	// public void createPedestrian(Pedestrian p) {
-	// if (!this.sourceIsOccupied()) {
-	// this.getSourceCell().setPedestrian(p);
-	// } else {
-	// // this.getCell(9, 0).setPedestrian(p);
-	//
-	// }
-	// }
 
 	public Cell getCell(int row, int col) {
 		return this.field.get(row * sideLength + col);
@@ -159,6 +154,42 @@ public class Field {
 				p = new Pedestrian(this.getCell(row, 0));
 				this.getCell(row, 0).setPedestrian(p);
 				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 4));
+				this.getCell(row, 4).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 8));
+				this.getCell(row, 8).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 14));
+				this.getCell(row, 14).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 16));
+				this.getCell(row, 16).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 20));
+				this.getCell(row, 20).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 24));
+				this.getCell(row, 24).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 27));
+				this.getCell(row, 27).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 31));
+				this.getCell(row, 31).setPedestrian(p);
+				this.pedestriansOnField.add(p);
+				
+				p = new Pedestrian(this.getCell(row, 37));
+				this.getCell(row, 37).setPedestrian(p);
+				this.pedestriansOnField.add(p);
 			}
 			this.initBarriers(szenario);
 		} else if (szenario == 4) {
@@ -192,9 +223,23 @@ public class Field {
 				pedestrian.getLocation().setPedestrian(null);
 			}
 		}
-
+		if(scenario==FUNDAMENTAL_DIAGRAMM){
+			int row=randomAccesPoint();
+			this.pedestrianReturn = new Pedestrian(this.getCell(row, 0));
+			this.getCell(row, 0).setPedestrian(pedestrianReturn);
+			this.pedestriansOnField.add(pedestrianReturn);
+			
+		}
+	}
+	
+	public boolean isPedestrianWithoutEvent() {
+		return pedestrianReturn != null;
 	}
 
+	private int randomAccesPoint(){
+		return (int) Math.random()*12;
+	}
+	
 	public Cell getTargetCellForNextStep() {
 		if (scenario == SCENARIO_CHICKEN_TEST) {
 			// Dijkstra anfang:
@@ -395,23 +440,10 @@ public class Field {
 
 		for (int row = 0; row < sideLength; row++) {
 			for (int col = 0; col < sideLength; col++) {
-//				if (rowSource == row && colSource == col) {
-//					Cell source = new Cell(rowSource, colSource, null);
-//					source.setSource(new Source());
-//					field.add(source);
-//					this.sourceCell = source;
-					// } else if (rowTarget == row && colTarget == col) {
-					// Cell target = new Cell(rowTarget, colTarget, null);
-					// target.setTarget(new Target());
-					// field.add(target);
-					// this.targetCell = target;
-//				} else {
 					field.add(new Cell(row, col, null));
-//				}
 			}
 		}
 		for (Cell c : targets) {
-//			Cell target = new Cell(c.getRow(), c.getCol(), null);
 			field.get(c.getRow() * sideLength + c.getCol()).setTarget(
 					new Target());
 		}
@@ -517,7 +549,6 @@ public class Field {
 		return path;
 	}
 
-	// Falsch
 	private int nearestTarget(int location) {
 		int target = location;
 		double dist = Double.MAX_VALUE;
@@ -551,7 +582,6 @@ public class Field {
 	}
 
 	private Cell dijkstra(int i) {
-		// int start = field.indexOf(c);
 		int start = i;
 		int shortest;
 		double distToShortest;
@@ -575,17 +605,12 @@ public class Field {
 					distToShortest);
 		}
 		int target = nearestTarget(start);
-//		int target = 59;
 		if (deleted.size() > 1 && deleted.containsKey(target)) {
-			// int target = field.indexOf(targets.get(0));
-			// int target = nearestTarget(deleted);
-
 			double distStartToTarget = deleted.get(target);
 
 			List<Integer> pathReverse = pathFromTargetToStart(target,
 					distStartToTarget, deleted);
 			nextCell = this.field.get(pathReverse.get(pathReverse.size() - 1));
-			// System.out.println(pathReverse);
 		}
 		return nextCell;
 	}
@@ -600,9 +625,6 @@ public class Field {
 				+ Math.pow(Math.abs(y2 - y1), 2));
 	}
 
-//	public boolean sourceIsOccupied() {
-//		return (this.getSourceCell().getPedestrian() != null) ? true : false;
-//	}
 	
 	public String guiToString(double eventTime, String result) {
 		if (scenario == FUNDAMENTAL_DIAGRAMM) {

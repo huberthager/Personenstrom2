@@ -9,44 +9,46 @@ public class Scheduler {
 	private int sideLength;
 	private Field field;
 	private FutureEventList futureEventList;
+	
+	
+
 	private Event currentEvent;
 	private List<Pedestrian> pedestriansOnField;
 
-	public Scheduler(double endSimTime, int sideLength, int rowSource,
-			int colSource, List<Cell> targets, int szenario) {
+	public Scheduler(double endSimTime, int sideLength, List<Cell> targets, int szenario) {
 		this.clock = 0;
 		this.endSimTime = endSimTime;
 		this.sideLength = sideLength;
-		this.field = new Field(sideLength, targets, szenario);
 		this.futureEventList = new FutureEventList();
+		this.field = new Field(sideLength, targets, szenario);
 		this.currentEvent = null;
 		pedestriansOnField = field.getPedestriansOnField();
 		for (Pedestrian p : pedestriansOnField) {
 			futureEventList.addEvent(new Arrival(0, p));
 		}
 	}
+	
 
 	public double run() {
 		while (clock < this.endSimTime && !(this.futureEventList.isEmpty())) {
+			if(field.isPedestrianWithoutEvent()){
+				futureEventList.addEvent(new Arrival(clock,field.getPedestrianReturn()));
+			}
 			this.currentEvent = futureEventList.removeAndGetFirst();
-			double tmp = clock;
 			this.clock = currentEvent.getEventTime();
 			this.currentEvent.processEvent(field, futureEventList);
 
 			String gui = "";
 			if (currentEvent instanceof StartMove
 					|| currentEvent instanceof Depature) {
-				for (int clear = 0; clear < 20; clear++) {
+				for (int clear = 0; clear < 40; clear++) {
 					System.out.println("\b");
 				}
-				// if(tmp!=clock){
-				// System.out.println(clock);
-				// }
 				gui = field.guiToString(clock, gui);
 				System.out.print(gui);
 				System.out.flush();
 				try {
-					Thread.sleep(200);
+					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -54,7 +56,6 @@ public class Scheduler {
 			}
 
 		}
-		System.out.println(clock);
 		return clock;
 	}
 

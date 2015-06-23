@@ -23,6 +23,10 @@ public class FutureEventList {
 		return priorityQueue.size() == 0;
 	}
 
+	public PriorityQueue<Event> getPriorityQueue() {
+		return priorityQueue;
+	}
+
 	public int size() {
 		return this.priorityQueue.size();
 	}
