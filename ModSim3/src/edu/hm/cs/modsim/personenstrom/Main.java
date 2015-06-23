@@ -1,8 +1,5 @@
 package edu.hm.cs.modsim.personenstrom;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,31 +11,30 @@ public class Main {
 	static ArrayList<Double> simTimes=new ArrayList<>();
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		
 		for(int i=0;i<1;i++){
 			//Fundamentaldiagramm: sideLength=65
 		int sideLength = 10;
-		double duration = 1000;
+		double duration = 100;
 		
 		//Test: Freier Fluss  1
 //		List<Cell> targets=simpleMovement();
 		
 		//Test: Huehnertest 2
-//		List<Cell> targets = chickenTest();
+		List<Cell> targets = chickenTest();
 		
 		//Test: Fundamentaldiagramm 3
 //		List<Cell>targets=fundamentalDiag();
 		
 		//Test: Evakuriungsszenario 4
-		List<Cell> targets=twoDoorSzenario();
+//		List<Cell> targets=twoDoorSzenario();
 //		List<Cell> targets=fourDoorSzenario();
 		
-		Scheduler scheduler = new Scheduler(duration,sideLength,0,0,targets,4);
+		Scheduler scheduler = new Scheduler(duration,sideLength,0,0,targets,2);
 		double tmp=scheduler.run();
 		simTimes.add(tmp);
 		}
-		
 		//OutputStream
 //		try {
 //			PrintWriter outputStream =new PrintWriter("Simtime44.txt");

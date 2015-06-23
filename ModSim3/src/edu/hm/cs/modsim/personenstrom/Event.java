@@ -17,6 +17,11 @@ public abstract class Event {
 	protected Pedestrian getPedestrian() {
 		return this.pedestrian;
 	}
+	
+	public String toString() {
+		return "" + pedestrian;
+	}
+	
 	public abstract void processEvent(Field field, FutureEventList futureEventList);
 
 }

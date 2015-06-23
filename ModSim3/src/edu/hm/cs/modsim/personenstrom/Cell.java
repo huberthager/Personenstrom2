@@ -65,6 +65,10 @@ public class Cell {
 	public void setTarget(Target target) {
 		this.target = target;
 	}
+	
+	public String toString() {
+		return "[" + row + col + "]";
+	}
 
 	public boolean equals(Cell other) {
 		return (this.getRow() == other.getRow() && this.getCol() == other
@@ -84,6 +88,10 @@ public class Cell {
 		if (sideLength - 1 == this.getCol()) {
 			System.out.println();
 		}
+	}
+
+	public boolean isOccupied() {
+		return this.pedestrian != null || this.barrier != null;
 	}
 
 }

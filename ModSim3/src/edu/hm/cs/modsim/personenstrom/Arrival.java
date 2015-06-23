@@ -20,6 +20,10 @@ public class Arrival extends Event {
 		futureEventList.addEvent(new StartMove(clockOfArrival+(1/pedestrian.getFreeFlowVelocity()), pedestrian));
 
 	}
+	
+	public String toString() {
+		return "" + pedestrian;
+	}
 
 	
 }

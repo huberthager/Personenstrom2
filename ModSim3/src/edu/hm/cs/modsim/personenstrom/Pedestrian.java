@@ -31,4 +31,8 @@ public class Pedestrian {
 	private  double  freeFlowVelocity() {
 		return new Random().nextGaussian()*0.18 + 1.3;
 	}
+	
+	public String toString() {
+		return "Ploc:" + location;
+	}
 }
