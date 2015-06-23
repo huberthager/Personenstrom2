@@ -14,11 +14,13 @@ public class Field {
 
 	private static final int SCENARIO_CHICKEN_TEST = 2;
 
+	private static final int FUNDAMENTAL_DIAGRAMM = 3;
+
 	private int sideLength;
 	private int scenario;
 	private double cellLength;
 
-	private Cell sourceCell;
+//	private Cell sourceCell;
 	private List<Cell> targets;
 	private Cell targetCellForNextStep;
 
@@ -27,14 +29,14 @@ public class Field {
 	private List<Cell> field = new ArrayList<>();
 	private List<Pedestrian> pedestriansOnField;
 
-	public Field(int sideLength, int rowSource, int colSource,
+	public Field(int sideLength,
 			List<Cell> targets, int scenario) {
 		this.sideLength = sideLength;
 		this.cellLength = 1;
 		this.scenario = scenario;
-		this.initCells(rowSource, colSource, targets);
+		this.initCells(targets);
 
-		this.sourceCell = this.getSourceCell();
+//		this.sourceCell = this.getSourceCell();
 		this.targets = targets;
 		this.pedestriansOnField = new LinkedList<>();
 		this.initPedestrians(scenario);
@@ -50,9 +52,9 @@ public class Field {
 				/ this.pedestrianToMove.getFreeFlowVelocity();
 	}
 
-	public Cell getSourceCell() {
-		return sourceCell;
-	}
+//	public Cell getSourceCell() {
+//		return sourceCell;
+//	}
 
 	public List<Cell> getTargets() {
 		return targets;
@@ -389,27 +391,27 @@ public class Field {
 	 * @param colTarget
 	 *            col index of Target.
 	 */
-	private void initCells(int rowSource, int colSource, List<Cell> targets) {
+	private void initCells(List<Cell> targets) {
 
 		for (int row = 0; row < sideLength; row++) {
 			for (int col = 0; col < sideLength; col++) {
-				if (rowSource == row && colSource == col) {
-					Cell source = new Cell(rowSource, colSource, null);
-					source.setSource(new Source());
-					field.add(source);
-					this.sourceCell = source;
+//				if (rowSource == row && colSource == col) {
+//					Cell source = new Cell(rowSource, colSource, null);
+//					source.setSource(new Source());
+//					field.add(source);
+//					this.sourceCell = source;
 					// } else if (rowTarget == row && colTarget == col) {
 					// Cell target = new Cell(rowTarget, colTarget, null);
 					// target.setTarget(new Target());
 					// field.add(target);
 					// this.targetCell = target;
-				} else {
+//				} else {
 					field.add(new Cell(row, col, null));
-				}
+//				}
 			}
 		}
 		for (Cell c : targets) {
-			Cell target = new Cell(c.getRow(), c.getCol(), null);
+//			Cell target = new Cell(c.getRow(), c.getCol(), null);
 			field.get(c.getRow() * sideLength + c.getCol()).setTarget(
 					new Target());
 		}
@@ -598,7 +600,23 @@ public class Field {
 				+ Math.pow(Math.abs(y2 - y1), 2));
 	}
 
-	public boolean sourceIsOccupied() {
-		return (this.getSourceCell().getPedestrian() != null) ? true : false;
+//	public boolean sourceIsOccupied() {
+//		return (this.getSourceCell().getPedestrian() != null) ? true : false;
+//	}
+	
+	public String guiToString(double eventTime, String result) {
+		if (scenario == FUNDAMENTAL_DIAGRAMM) {
+			for (Cell c : field) {
+				if(c.getRow() < 13) {
+					result = c.guiToString(sideLength, result);
+				}
+			}
+		} else {
+			for (Cell c : field) {
+				result = c.guiToString(sideLength, result);
+			}
+		}
+		result += "\n" + eventTime + "\n";
+		return result;
 	}
 }

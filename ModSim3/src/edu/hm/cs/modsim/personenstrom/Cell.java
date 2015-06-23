@@ -6,7 +6,6 @@ public class Cell {
 	private int col;
 	private Pedestrian pedestrian;
 	private Barrier barrier;
-	private Source source;
 	private Target target;
 
 	public Cell(int row, int col, Pedestrian pedestrian) {
@@ -14,7 +13,6 @@ public class Cell {
 		this.col = col;
 		this.pedestrian = pedestrian;
 		this.barrier = null;
-		this.source = null;
 		this.target = null;
 	}
 
@@ -48,14 +46,6 @@ public class Cell {
 
 	public void setBarrier(Barrier barrier) {
 		this.barrier = barrier;
-	}
-
-	public Source getSource() {
-		return source;
-	}
-
-	public void setSource(Source source) {
-		this.source = source;
 	}
 
 	public Target getTarget() {
@@ -92,6 +82,22 @@ public class Cell {
 
 	public boolean isOccupied() {
 		return this.pedestrian != null || this.barrier != null;
+	}
+	
+	public String guiToString(int sideLength,String result) {
+		if (this.barrier != null) {
+			result+="[+]";
+		} else if (this.pedestrian != null) {
+			result+="[p]";
+		} else if (this.target != null) {
+			result+="[T]";
+		} else {
+			result+="[ ]";
+		}
+		if (sideLength - 1 == this.getCol()) {
+			result+="\n";
+		}
+		return result;
 	}
 
 }

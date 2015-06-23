@@ -12,7 +12,6 @@ public class Main {
 	
 	
 	public static void main(String[] args) throws InterruptedException {
-		
 		for(int i=0;i<1;i++){
 			//Fundamentaldiagramm: sideLength=65
 		int sideLength = 10;
