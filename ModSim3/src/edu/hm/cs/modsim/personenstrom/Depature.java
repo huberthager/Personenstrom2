@@ -14,8 +14,6 @@ public class Depature extends Event {
 
 		field.killPedestrianOnTarget(this.getPedestrian());
 		
-		field.printToConsole(field.getSideLength());
-		System.out.println();
 	}
 
 }

@@ -41,7 +41,6 @@ public class Field {
 		this.targets = targets;
 		this.pedestriansOnField = new LinkedList<>();
 		this.initPedestrians(scenario);
-		this.printToConsole(sideLength);
 	}
 
 	public Pedestrian getPedestrianReturn() {
