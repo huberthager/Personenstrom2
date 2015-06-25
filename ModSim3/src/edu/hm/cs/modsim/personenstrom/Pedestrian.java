@@ -32,7 +32,18 @@ public class Pedestrian {
 		return new Random().nextGaussian()*0.18 + 1.3;
 	}
 	
+	
+	
 	public String toString() {
-		return "Ploc:" + location;
+		return "{" + location.getRow() + " " + location.getCol() + "}";
 	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		Pedestrian other = (Pedestrian) obj;
+		return this.location.equals(other.location);
+	}
+
+
 }

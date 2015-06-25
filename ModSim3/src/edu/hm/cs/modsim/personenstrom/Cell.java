@@ -57,28 +57,28 @@ public class Cell {
 	}
 	
 	public String toString() {
-		return "[" + row + col + "]";
+		return "[" + row + " " + col + "]";
 	}
 
 	public boolean equals(Cell other) {
-		return (this.getRow() == other.getRow() && this.getCol() == other
-				.getCol()) ? true : false;
+		return (this.row == other.row && this.col == other
+				.col) ? true : false;
 	}
 
-	public void printToConsole(int sideLength) {
-		if (this.barrier != null) {
-			System.out.print("[+]");
-		} else if (this.pedestrian != null) {
-			System.out.print("[P]");
-		} else if (this.target != null) {
-			System.out.print("[T]");
-		} else {
-			System.out.print("[ ]");
-		}
-		if (sideLength - 1 == this.getCol()) {
-			System.out.println();
-		}
-	}
+//	public void printToConsole(int sideLength) {
+//		if (this.barrier != null) {
+//			System.out.print("[+]");
+//		} else if (this.pedestrian != null) {
+//			System.out.print("[P]");
+//		} else if (this.target != null) {
+//			System.out.print("[T]");
+//		} else {
+//			System.out.print("[ ]");
+//		}
+//		if (sideLength - 1 == this.getCol()) {
+//			System.out.println();
+//		}
+//	}
 
 	public boolean isOccupied() {
 		return this.pedestrian != null || this.barrier != null;

@@ -15,7 +15,7 @@ public class StartMove extends Event {
 		target = field.getTargetCellForNextStep(); 
 		timeToMove = field.getTimeToMovePedestrian(pToMove.getLocation(),
 				target);
-		field.movePedestrian(); 
+		field.movePedestrian(super.eventTime,timeToMove); 
 	
 		//TODO
 		if(timeToMove==0){

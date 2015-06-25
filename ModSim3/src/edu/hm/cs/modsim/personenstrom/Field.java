@@ -13,13 +13,17 @@ import java.util.Set;
 public class Field {
 
 	private static final int SCENARIO_CHICKEN_TEST = 2;
+	private static final int SCENARIO_FUNDAMENTAL_DIAGRAMM = 3;
 
-	private static final int FUNDAMENTAL_DIAGRAMM = 3;
+	private static final int STANDARD_LINE_START = 30;
+	private static final int STANDARD_LINE_STOP = 32;
 
 	private int sideLength;
 	private int scenario;
 	private double cellLength;
+	private double pedestrianFlowVel;
 	private boolean pedestrianWithoutEvent;
+	
 
 	private List<Cell> targets;
 	private Cell targetCellForNextStep;
@@ -29,26 +33,25 @@ public class Field {
 
 	private List<Cell> field = new ArrayList<>();
 	private List<Pedestrian> pedestriansOnField;
+	private Map<Pedestrian, Double> pOnStdLine = new HashMap<>();
 
-	public Field(int sideLength,
-			List<Cell> targets, int scenario) {
+	public Field(int sideLength, List<Cell> targets, int scenario) {
 		this.sideLength = sideLength;
 		this.cellLength = 1;
 		this.scenario = scenario;
-		this.pedestrianWithoutEvent=false;
+		this.pedestrianWithoutEvent = false;
 		this.initCells(targets);
-		this.pedestrianReturn=null;
+		this.pedestrianReturn = null;
 		this.targets = targets;
 		this.pedestriansOnField = new LinkedList<>();
 		this.initPedestrians(scenario);
 	}
 
 	public Pedestrian getPedestrianReturn() {
-		Pedestrian p=pedestrianReturn;
-		pedestrianReturn=null;
+		Pedestrian p = pedestrianReturn;
+		pedestrianReturn = null;
 		return p;
 	}
-
 
 	public int getSideLength() {
 		return sideLength;
@@ -58,7 +61,6 @@ public class Field {
 		return euklidDist(that, other)
 				/ this.pedestrianToMove.getFreeFlowVelocity();
 	}
-
 
 	public List<Cell> getTargets() {
 		return targets;
@@ -76,11 +78,11 @@ public class Field {
 		this.pedestrianToMove = pedestrianToMove;
 	}
 
-	public void printToConsole(int sideLength) {
-		for (Cell c : field) {
-			c.printToConsole(sideLength);
-		}
-	}
+	// public void printToConsole(int sideLength) {
+	// for (Cell c : field) {
+	// c.printToConsole(sideLength);
+	// }
+	// }
 
 	public List<Pedestrian> getPedestriansOnField() {
 		return pedestriansOnField;
@@ -101,10 +103,10 @@ public class Field {
 
 	public Cell getCell(Pedestrian pedestrian) {
 		for (Cell c : field) {
-			if (c.getPedestrian() == pedestrian) {
-				return c;
-			} else {
-				return null;
+			if (c.getPedestrian() != null) {
+				if (c.getPedestrian().equals(pedestrian)) {
+					return c;
+				}
 			}
 		}
 		return null;
@@ -153,39 +155,39 @@ public class Field {
 				p = new Pedestrian(this.getCell(row, 0));
 				this.getCell(row, 0).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 4));
 				this.getCell(row, 4).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 8));
 				this.getCell(row, 8).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 14));
 				this.getCell(row, 14).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 16));
 				this.getCell(row, 16).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 20));
 				this.getCell(row, 20).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 24));
 				this.getCell(row, 24).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 27));
 				this.getCell(row, 27).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 31));
 				this.getCell(row, 31).setPedestrian(p);
 				this.pedestriansOnField.add(p);
-				
+
 				p = new Pedestrian(this.getCell(row, 37));
 				this.getCell(row, 37).setPedestrian(p);
 				this.pedestriansOnField.add(p);
@@ -222,23 +224,19 @@ public class Field {
 				pedestrian.getLocation().setPedestrian(null);
 			}
 		}
-		if(scenario==FUNDAMENTAL_DIAGRAMM){
-			int row=randomAccesPoint();
+		if (scenario == SCENARIO_FUNDAMENTAL_DIAGRAMM) {
+			int row = randomAccesPoint();
 			this.pedestrianReturn = new Pedestrian(this.getCell(row, 0));
 			this.getCell(row, 0).setPedestrian(pedestrianReturn);
 			this.pedestriansOnField.add(pedestrianReturn);
-			
+
 		}
 	}
-	
+
 	public boolean isPedestrianWithoutEvent() {
 		return pedestrianReturn != null;
 	}
 
-	private int randomAccesPoint(){
-		return (int) Math.random()*12;
-	}
-	
 	public Cell getTargetCellForNextStep() {
 		if (scenario == SCENARIO_CHICKEN_TEST) {
 			// Dijkstra anfang:
@@ -278,6 +276,10 @@ public class Field {
 			}
 		}
 		return targetCellForNextStep;
+	}
+
+	private int randomAccesPoint() {
+		return (int) Math.random() * 12;
 	}
 
 	private double friedrichsMollifier(Cell cell) {
@@ -323,18 +325,26 @@ public class Field {
 
 	}
 
-	public boolean movePedestrian() {
-		Cell pedStart;
-		Cell pedMoveTo;
+	public boolean movePedestrian(double eventTime, double timeToMove) {
+		Cell pedStart = getCell(pedestrianToMove);
+		Cell pedMoveTo = this.getTargetCellForNextStep();
 
-		if (!pedestrianToMove.getLocation().equals(targetCellForNextStep)) {
-			pedStart = this.getCell(pedestrianToMove.getLocation().getRow(),
-
-			pedestrianToMove.getLocation().getCol());
-			pedMoveTo = this.getTargetCellForNextStep(); // Zielzelle ermitteln
+		if (!pedStart.equals(pedMoveTo)) {
+			if(scenario == SCENARIO_FUNDAMENTAL_DIAGRAMM) {
+				if(pedMoveTo.getCol() == STANDARD_LINE_START) {
+					if(!pOnStdLine.containsKey(pedestrianToMove)) {
+						pOnStdLine.put(pedestrianToMove, eventTime+timeToMove);
+					}
+				}
+				if(pedMoveTo.getCol() > STANDARD_LINE_STOP) {
+					//eventTime abholen
+					
+					pOnStdLine.remove(pedestrianToMove);
+				}
+			}
 			pedStart.setPedestrian(null);
 			pedMoveTo.setPedestrian(pedestrianToMove);
-			this.pedestrianToMove.setLocation(targetCellForNextStep);
+			this.pedestrianToMove.setLocation(pedMoveTo);
 			return true;
 		} else {
 			return false;
@@ -439,7 +449,7 @@ public class Field {
 
 		for (int row = 0; row < sideLength; row++) {
 			for (int col = 0; col < sideLength; col++) {
-					field.add(new Cell(row, col, null));
+				field.add(new Cell(row, col, null));
 			}
 		}
 		for (Cell c : targets) {
@@ -552,9 +562,9 @@ public class Field {
 		int target = location;
 		double dist = Double.MAX_VALUE;
 		double tmp;
-		for(Cell c : targets) {
+		for (Cell c : targets) {
 			tmp = euklidDist(field.get(location), c);
-			if(tmp < dist) {
+			if (tmp < dist) {
 				dist = tmp;
 				target = c.getRow() * sideLength + c.getCol();
 			}
@@ -624,11 +634,10 @@ public class Field {
 				+ Math.pow(Math.abs(y2 - y1), 2));
 	}
 
-	
 	public String guiToString(double eventTime, String result) {
-		if (scenario == FUNDAMENTAL_DIAGRAMM) {
+		if (scenario == SCENARIO_CHICKEN_TEST) {
 			for (Cell c : field) {
-				if(c.getRow() < 13) {
+				if (c.getRow() < 13) {
 					result = c.guiToString(sideLength, result);
 				}
 			}

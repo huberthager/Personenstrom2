@@ -38,22 +38,17 @@ public class Scheduler {
 			futureEventList.addEvent(new Arrival(0, p));
 		}
 		
-		
 		frame = new JFrame();
 		frame.add(new JLabel("Personenstrom Simulation"), BorderLayout.NORTH);
 		ta = new JTextArea();
 		
 		frame.add(ta);
-		frame.setSize(1000, 500);
-		taos = new TextAreaOutputStream(ta, 200);
+		frame.setSize(1400, 400);
+		taos = new TextAreaOutputStream(ta,60);
 		ps = new PrintStream(taos);
 		
 		System.setOut(ps);
 		System.setErr(ps);
-
-
-//		frame.pack();
-//		frame.setPreferredSize(new Dimension(500, 500));
 		frame.setVisible(true);
 		
 		
@@ -76,17 +71,18 @@ public class Scheduler {
 			this.clock = currentEvent.getEventTime();
 			this.currentEvent.processEvent(field, futureEventList);
 			
-			taos.clear();
+			
 			String gui = "";
 			if (currentEvent instanceof StartMove
 					|| currentEvent instanceof Depature) {
 //				for (int clear = 0; clear < 40; clear++) {
 //					System.out.println("\b");
 //				}
+				taos.clear();
 				gui = field.guiToString(clock, gui);
 				System.out.print(gui);
 				try {
-					Thread.sleep(500);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -97,8 +93,8 @@ public class Scheduler {
 		return clock;
 	}
 
-	public void printFieldToConsole() {
-		this.field.printToConsole(sideLength);
-	}
+//	public void printFieldToConsole() {
+//		this.field.printToConsole(sideLength);
+//	}
 
 }
