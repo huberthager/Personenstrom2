@@ -92,7 +92,7 @@ public class Cell {
 		} else if (this.target != null) {
 			result+="[T]";
 		} else {
-			result+="[  ]";
+			result+="[ ]";
 		}
 		if (sideLength - 1 == this.getCol()) {
 			result+="\n";

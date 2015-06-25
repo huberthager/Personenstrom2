@@ -14,15 +14,15 @@ public class Field {
 
 	private static final int SCENARIO_CHICKEN_TEST = 2;
 	private static final int SCENARIO_FUNDAMENTAL_DIAGRAMM = 3;
-
+	
+	private static double STANDARD_LINE_WIDTH = 12;
 	private static final int STANDARD_LINE_START = 30;
 	private static final int STANDARD_LINE_STOP = 32;
 
 	private int sideLength;
 	private int scenario;
 	private double cellLength;
-	private double pedestrianFlowVel;
-	private boolean pedestrianWithoutEvent;
+//	private double pedestrianFlowVel;
 	
 
 	private List<Cell> targets;
@@ -34,12 +34,16 @@ public class Field {
 	private List<Cell> field = new ArrayList<>();
 	private List<Pedestrian> pedestriansOnField;
 	private Map<Pedestrian, Double> pOnStdLine = new HashMap<>();
+//	private Map<Double, Double> meanVels = new HashMap<>();
+	//Daten
+	private List<Double> realVels = new ArrayList<>();
+	private List<Double> realVelEventTimes = new ArrayList<>();
+	private List<Double> personFlow = new ArrayList<>();
 
 	public Field(int sideLength, List<Cell> targets, int scenario) {
 		this.sideLength = sideLength;
 		this.cellLength = 1;
 		this.scenario = scenario;
-		this.pedestrianWithoutEvent = false;
 		this.initCells(targets);
 		this.pedestrianReturn = null;
 		this.targets = targets;
@@ -91,6 +95,7 @@ public class Field {
 	public Cell getCell(int row, int col) {
 		return this.field.get(row * sideLength + col);
 	}
+
 
 	public boolean pedestrianIsOnTarget() {
 		for (Cell c : targets) {
@@ -217,6 +222,18 @@ public class Field {
 
 	}
 
+	public List<Double> getRealVels() {
+		return realVels;
+	}
+
+	public List<Double> getRealVelEventTimes() {
+		return realVelEventTimes;
+	}
+
+	public List<Double> getPersonFlow() {
+		return personFlow;
+	}
+
 	public void killPedestrianOnTarget(Pedestrian pedestrian) {
 		pedestriansOnField.remove(pedestrian); // Aus Pedestrian Container
 		for (Cell c : targets) {
@@ -225,11 +242,14 @@ public class Field {
 			}
 		}
 		if (scenario == SCENARIO_FUNDAMENTAL_DIAGRAMM) {
-			int row = randomAccesPoint();
-			this.pedestrianReturn = new Pedestrian(this.getCell(row, 0));
-			this.getCell(row, 0).setPedestrian(pedestrianReturn);
+			int row = randomAccessPoint();
+			int col = 0;
+			while (getCell(row,col).isOccupied()) {
+				col++;
+			}
+			this.pedestrianReturn = new Pedestrian(this.getCell(row, col));
+			this.getCell(row, col).setPedestrian(pedestrianReturn);
 			this.pedestriansOnField.add(pedestrianReturn);
-
 		}
 	}
 
@@ -278,8 +298,8 @@ public class Field {
 		return targetCellForNextStep;
 	}
 
-	private int randomAccesPoint() {
-		return (int) Math.random() * 12;
+	private int randomAccessPoint() {
+		return (int) (Math.random() * 12);
 	}
 
 	private double friedrichsMollifier(Cell cell) {
@@ -328,7 +348,8 @@ public class Field {
 	public boolean movePedestrian(double eventTime, double timeToMove) {
 		Cell pedStart = getCell(pedestrianToMove);
 		Cell pedMoveTo = this.getTargetCellForNextStep();
-
+		double timeInStrip = 0;
+		
 		if (!pedStart.equals(pedMoveTo)) {
 			if(scenario == SCENARIO_FUNDAMENTAL_DIAGRAMM) {
 				if(pedMoveTo.getCol() == STANDARD_LINE_START) {
@@ -336,16 +357,25 @@ public class Field {
 						pOnStdLine.put(pedestrianToMove, eventTime+timeToMove);
 					}
 				}
-				if(pedMoveTo.getCol() > STANDARD_LINE_STOP) {
-					//eventTime abholen
-					
-					pOnStdLine.remove(pedestrianToMove);
+				if(pedMoveTo.getCol() == STANDARD_LINE_STOP + 1) {
+					if(pOnStdLine.containsKey(pedestrianToMove)) {
+						timeInStrip = eventTime - pOnStdLine.get(pedestrianToMove);
+						pOnStdLine.remove(pedestrianToMove);
+					}
 				}
 			}
 			pedStart.setPedestrian(null);
 			pedMoveTo.setPedestrian(pedestrianToMove);
 			this.pedestrianToMove.setLocation(pedMoveTo);
-			return true;
+			if (timeInStrip != 0) {
+				double vel = (STANDARD_LINE_STOP - STANDARD_LINE_START) / timeInStrip;
+				realVelEventTimes.add(eventTime);
+				realVels.add(vel);
+				personFlow.add( pOnStdLine.size() / STANDARD_LINE_WIDTH);
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -635,7 +665,7 @@ public class Field {
 	}
 
 	public String guiToString(double eventTime, String result) {
-		if (scenario == SCENARIO_CHICKEN_TEST) {
+		if (scenario == SCENARIO_FUNDAMENTAL_DIAGRAMM) {
 			for (Cell c : field) {
 				if (c.getRow() < 13) {
 					result = c.guiToString(sideLength, result);
