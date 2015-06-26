@@ -2,6 +2,12 @@ package edu.hm.cs.modsim.personenstrom;
 
 import java.util.Comparator;
 
+/**
+ * Legt Vergleichskriterien fest, wonach Events verglichen werden
+ * 
+ * @author Hubert Hager, Tobi Höfer
+ *
+ */
 public class EventComparator implements Comparator<Event> {
 
 	@Override

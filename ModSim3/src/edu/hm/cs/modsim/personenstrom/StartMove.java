@@ -1,11 +1,19 @@
 package edu.hm.cs.modsim.personenstrom;
 
+/**
+ * Bewegung eines Fußgängers auf Feld
+ * @author Hubert Hager, Tobi Höfer
+ *
+ */
 public class StartMove extends Event {
 
 	public StartMove(double clock, Pedestrian pedestrian) {
 		super(clock, pedestrian);
 	}
-
+	
+	/**
+	 * Bewegt virtuell Person und berechnet Zeit für nächsten Schritt
+	 */
 	@Override
 	public void processEvent(Field field, FutureEventList futureEventList) {
 		Pedestrian pToMove = this.getPedestrian();

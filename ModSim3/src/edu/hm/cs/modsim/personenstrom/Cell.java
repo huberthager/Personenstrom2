@@ -1,5 +1,12 @@
 package edu.hm.cs.modsim.personenstrom;
 
+/**
+ * Kleinster Bestandteil des Feldes. Eine Zelle besteht aus eindeutigen
+ * Koordinaten und hat Zustände entsprechend ihrem Inhalt.
+ * 
+ * @author Hubert Hager, Tobi Höfer
+ *
+ */
 public class Cell {
 
 	private int row;
@@ -16,86 +23,156 @@ public class Cell {
 		this.target = null;
 	}
 
+	/**
+	 * Getter für row
+	 * 
+	 * @return
+	 */
 	public int getRow() {
 		return row;
 	}
 
-	public void setRow(int row) {
-		this.row = row;
-	}
+	/**
+	 * Setter für row
+	 * 
+	 * @param row
+	 */
+	// public void setRow(int row) {
+	// this.row = row;
+	// }
 
+	/**
+	 * Getter für col
+	 * 
+	 * @return
+	 */
 	public int getCol() {
 		return col;
 	}
 
-	public void setCol(int col) {
-		this.col = col;
-	}
+	/**
+	 * Setter für col
+	 * 
+	 * @param col
+	 */
+	// public void setCol(int col) {
+	// this.col = col;
+	// }
 
+	/**
+	 * Getter für Fußgänger
+	 * 
+	 * @return
+	 */
 	public Pedestrian getPedestrian() {
 		return pedestrian;
 	}
 
+	/**
+	 * Setter für Fußgänger
+	 * 
+	 * @param pedestrian
+	 */
 	public void setPedestrian(Pedestrian pedestrian) {
 		this.pedestrian = pedestrian;
 	}
 
+	/**
+	 * Getter Für Barriere
+	 * 
+	 * @return
+	 */
 	public Barrier getBarrier() {
 		return barrier;
 	}
 
+	/**
+	 * Setter für Barrier
+	 * 
+	 * @param barrier
+	 */
 	public void setBarrier(Barrier barrier) {
 		this.barrier = barrier;
 	}
 
+	/**
+	 * Getter für Zielzelle
+	 * 
+	 * @return
+	 */
 	public Target getTarget() {
 		return target;
 	}
 
+	/**
+	 * Setter für Target
+	 * 
+	 * @param target
+	 */
 	public void setTarget(Target target) {
 		this.target = target;
 	}
-	
+
+	/**
+	 * toString Methode
+	 */
 	public String toString() {
 		return "[" + row + " " + col + "]";
 	}
 
+	/**
+	 * equals Methode vergleicht wann zwei Zellen Gleichheit besitzen
+	 * 
+	 * @param other
+	 * @return
+	 */
 	public boolean equals(Cell other) {
-		return (this.row == other.row && this.col == other
-				.col) ? true : false;
+		return (this.row == other.row && this.col == other.col) ? true : false;
 	}
 
-//	public void printToConsole(int sideLength) {
-//		if (this.barrier != null) {
-//			System.out.print("[+]");
-//		} else if (this.pedestrian != null) {
-//			System.out.print("[P]");
-//		} else if (this.target != null) {
-//			System.out.print("[T]");
-//		} else {
-//			System.out.print("[ ]");
-//		}
-//		if (sideLength - 1 == this.getCol()) {
-//			System.out.println();
-//		}
-//	}
+	// public void printToConsole(int sideLength) {
+	// if (this.barrier != null) {
+	// System.out.print("[+]");
+	// } else if (this.pedestrian != null) {
+	// System.out.print("[P]");
+	// } else if (this.target != null) {
+	// System.out.print("[T]");
+	// } else {
+	// System.out.print("[ ]");
+	// }
+	// if (sideLength - 1 == this.getCol()) {
+	// System.out.println();
+	// }
+	// }
 
+	/**
+	 * Gibt Auskunft ob einer Zelle belegt ist
+	 * 
+	 * @return
+	 */
 	public boolean isOccupied() {
 		return this.pedestrian != null || this.barrier != null;
 	}
-	
-	public String guiToString(int sideLength,String result) {
+
+	/**
+	 * Zelle wird bezgl ihres Inhalts grafisch dargestellt
+	 * 
+	 * @param sideLength
+	 * @param result
+	 * @return
+	 */
+	public String guiToString(int sideLength, String result) {
 		if (this.barrier != null) {
-			result+="[+]";
+			result += "[+]";
 		} else if (this.pedestrian != null) {
-			result+="[p]";
+			result += "[p]";
 		} else if (this.target != null) {
-			result+="[T]";
+			result += "[T]";
 		} else {
-			result+="[ ]";
+			result += "[ ]";
 		}
 		if (sideLength - 1 == this.getCol()) {
-			result+="\n";
+			result += "\n";
 		}
 		return result;
 	}
